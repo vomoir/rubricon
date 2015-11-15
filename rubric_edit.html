@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)http://getbootstrap.com/examples/jumbotron/ -->
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="description" content=""/>
+		<meta name="author" content=""/>
+		<link rel="shortcut icon" href="img/favicon.png"/>
+
+		<title>St Cath's Sports Choices</title>
+		<link href="css/bootstrap.min.css" rel="stylesheet"/>
+		<link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
+		<link href="css/bootstrap-slider.css" rel="stylesheet"/>
+		<script src="./js/jquery.min.js"></script>
+		
+		<style>[touch-action="none"]{ -ms-touch-action: none; touch-action: none; }[touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }[touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }[touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }</style>
+		<script>
+			$(document).ready(function() {
+				//bind the onblur on inputs so the values are restored
+				$( "input" ).blur(function() {
+					//alert( "Handler for .blur() called." + this.name );
+					if(this.value==''){
+						this.value = this.placeholder;
+					}
+				});
+				$.ajax({
+					url: "project_get_list.php",
+					cache: false,
+					success: function(html){
+						$("#projects_list").append(html);
+					}
+				});
+			});
+			function getProjectData(projId){
+				if(projId > 0){
+					//alert(projId);
+					$.ajax({
+						type: "POST",
+						url: "project_get_detail.php",
+						cache: false,
+						data: {'ID': projId},
+						dataType: "xml",
+						success: function(xml) {
+							console.log(xml);
+							$(xml).find('projects').each(function(){
+								//var nName = this.nodeName;
+								//alert("Node Name = " + nName);
+								var proj = $(this).find("project").text();
+								$('#project').val(proj);
+								var proj_details = $(this).find("project_details").text()
+								$('#p_details').val(proj_details);
+							});
+						},
+						error: function(xhr, textStatus, error){
+							console.log(xhr.statusText);
+							console.log(textStatus);
+							console.log(error);
+						}
+					});
+				} 
+			}
+
+			function displayMessage(msg){
+				BootstrapDialog.show({
+					title:"Rubricon",
+					size: BootstrapDialog.SIZE_NORMAL,
+					cssClass: 'login-dialog',
+					message: msg,
+					draggable: true,
+					buttons: [{
+						label: 'Close',
+						action: function(dialogItself){
+							dialogItself.close();
+						}
+					}]
+				});
+			}
+			
+		</script>
+	</head>
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse"/>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="index.html">Rubricon</a>
+				</div>
+				<div class="navbar-collapse collapse" style="height: 1px;">
+					<ul class="nav navbar-nav">
+						<li><a href="index.html">Home</a></li>
+						<li class="active"><a href="register.html">Register</a></li>
+						<li><a href="login.html">Log In</a></li>
+						<li><a href="sports_select.html">Projects</a></li>
+					</ul>
+				</div><!--/.navbar-collapse -->
+			</div>
+		</div>
+
+		<div id="container">
+			<div class="row">
+				<h2>Edit Rubric Details</h2>
+				<form id="projectedit" name="projectedit" role="form" class="form-horizontal">
+					<div class="col-md-6 col-md-offset-1">
+						<div class="form-group">
+							<label for="projects_list" class="col-lg-4 control-label">Select Project</label>
+							<select id="projects_list" class="form-control" name="projects_list" class="col-lg-8" onchange="getProjectData($('#projects_list').find(':selected').val())">
+								<option value="0">Select project...</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="project" class="col-lg-4 control-label">Project:</label>
+							<input type="text" name="project" id="project" placeholder="Project Name" class="form-control" size="20" class="col-lg-8">
+						</div>
+						<div class="form-group">
+							<label for="p_details" class="col-lg-4 control-label">Project Details:</label>
+							<textarea id="p_details" name="p_details" class="form-control" rows="3" class="col-lg-8"></textarea>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="row">
+				<div class="col-lg-4  col-md-offset-1">
+				  <label for="r_slider" class="control-label">Number of Grades:</label>
+					<input id="r_slider" class="r_slider" type="text" style="width:100%;"/>			
+				</div>
+				
+				<div class="col-lg-4">
+					<label for="r_categories" class="control-label">Number of Categories/Criteria:</label>
+					<input id="r_categories" type="text" data-slider-orientation="vertical"/
+				</div>
+      </div>
+      <button id="rCategoryBtn">Add Categories</button>
+			<div class="row">
+				<div class="col-xs-12 col-md-6 col-md-offset-3">
+					<a href="#" onclick="saveProjectData($('#projects_list').find(':selected').val());" class="btn btn-success btn-primary">Save Changes</a>
+					<a href="#" onclick="deleteProjectData($('#projects_list').find(':selected').val());" class="btn btn-warning">Delete Project</a>	
+				</div>
+			</div>
+			<hr/>
+			<!--=================================================================-->
+    <div id="main">
+        <input type="button" id="btAdd" value="Add Element" class="bt" />
+        <input type="button" id="btRemove" value="Remove Element" class="bt" />
+        <input type="button" id="btRemoveAll" value="Remove All" class="bt" /><br />
+    </div>
+			<!--=================================================================-->
+			<footer>
+				<p>&copy; STEM Cell 2015</p>
+			</footer>			
+		</div>
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/jquery-ui.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/bootstrap-dialog.min.js"></script>
+
+		<script>
+
+			$( document ).ready(function() {
+				$("#r_slider").slider({
+					ticks: [1,2,3,4,5,6,7,8,9,10],
+					ticks_labels: labels,
+					ticks_snap_bounds: 30
+				});	
+
+				$("#r_slider").on("slideStop", function(slideEvt) {
+					console.log(slideEvt.value);
+					$("#rubric_val").val(rubricValues[slideEvt.value-1]);
+				});
+
+				// With JQuery
+        $("#r_categories").slider({
+          min:1,
+          max:10,
+          ticks:[1,2,3,4,5,6,7,8,9,10],
+          ticks_labels:labels,
+          ticks_snap_bounds: 30,
+	        reversed : false
+        });
+        /* Add dynamic controls */
+
+        var iCnt = 0;
+        // CREATE A "DIV" ELEMENT AND DESIGN IT USING JQUERY ".css()" CLASS.
+        var container = $(document.createElement('div')).css({
+            padding: '5px', margin: '20px', width: '170px', border: '1px dashed',
+            borderTopColor: '#999', borderBottomColor: '#999',
+            borderLeftColor: '#999', borderRightColor: '#999'
+        });
+
+        $('#btAdd').click(function() {
+            if (iCnt <= 19) {
+
+                iCnt = iCnt + 1;
+
+                // ADD TEXTBOX.
+                $(container).append('<input type=text class="input" id=tb' + iCnt + ' ' +
+                            'value="Text Element ' + iCnt + '" />');
+
+                // SHOW SUBMIT BUTTON IF ATLEAST "1" ELEMENT HAS BEEN CREATED.
+                if (iCnt == 1) {
+
+                    var divSubmit = $(document.createElement('div'));
+                    $(divSubmit).append('<input type=button class="bt" onclick="GetTextValue()"' + 
+                            'id=btSubmit value=Submit />');
+                }
+
+                // ADD BOTH THE DIV ELEMENTS TO THE "main" CONTAINER.
+                $('#main').after(container, divSubmit);
+            }
+            // AFTER REACHING THE SPECIFIED LIMIT, DISABLE THE "ADD" BUTTON.
+            // (20 IS THE LIMIT WE HAVE SET)
+            else {      
+                
+                $(container).append('<label>Reached the limit</label>'); 
+                $('#btAdd').attr('class', 'bt-disable'); 
+                $('#btAdd').attr('disabled', 'disabled');
+
+            }
+        });
+
+        $('#btRemove').click(function() {   // REMOVE ELEMENTS ONE PER CLICK.
+            if (iCnt != 0) { $('#tb' + iCnt).remove(); iCnt = iCnt - 1; }
+        
+            if (iCnt == 0) { $(container).empty(); 
+        
+                $(container).remove(); 
+                $('#btSubmit').remove(); 
+                $('#btAdd').removeAttr('disabled'); 
+                $('#btAdd').attr('class', 'bt') 
+
+            }
+        });
+
+        $('#btRemoveAll').click(function() {    // REMOVE ALL THE ELEMENTS IN THE CONTAINER.
+        
+            $(container).empty(); 
+            $(container).remove(); 
+            $('#btSubmit').remove(); iCnt = 0; 
+            $('#btAdd').removeAttr('disabled'); 
+            $('#btAdd').attr('class', 'bt');
+
+        });
+    });
+
+		</script>
+	</body>
+</html>
