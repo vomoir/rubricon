@@ -9,22 +9,17 @@
 		<meta name="author" content=""/>
 		<link rel="shortcut icon" href="img/favicon.png"/>
 
-		<title>St Cath's Sports Choices</title>
+		<title>Rubricon</title>
 		<link href="css/bootstrap.min.css" rel="stylesheet"/>
 		<link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
 		<link href="css/bootstrap-slider.css" rel="stylesheet"/>
+		<link href="styles.css" rel="stylesheet"/>
 		<script src="./js/jquery.min.js"></script>
 		
 		<style>[touch-action="none"]{ -ms-touch-action: none; touch-action: none; }[touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }[touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }[touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }</style>
 		<script>
 			$(document).ready(function() {
 				//bind the onblur on inputs so the values are restored
-				$( "input" ).blur(function() {
-					//alert( "Handler for .blur() called." + this.name );
-					if(this.value==''){
-						this.value = this.placeholder;
-					}
-				});
 				$.ajax({
 					url: "project_get_list.php",
 					cache: false,
@@ -60,6 +55,43 @@
 						}
 					});
 				} 
+			}
+			
+			function saveRubricData(projId){
+				//var str = $("form").serialize();
+				//Get values from added textareas
+				var numItems = $('.rubric').length;
+				var rStr = "";
+				for(var i = numItems; i > 0; i--){
+        //for(var i = 1; i < numItems + 1; i++){
+          var rText = $('#ta' + parseInt(i)).val();
+          var rLevel = parseInt(i);
+  				$.ajax({
+  					url: "rubric_edit.php",
+  					cache: false,
+  					type: 'POST',
+  					data:{project_id: projId, r_level: rLevel, r_text: rText},
+  					success: function(resp) {
+  						if(resp.indexOf("error") > -1){
+  							msg = resp.replace("error","");																						
+  						} else {
+  							msg = "Project Rubric details updated!";
+  						}
+  					},
+  					error: function(xhr, textStatus, error){
+  						displayMessage("Error saving data: " + error ); 
+  					}
+  				});
+			  }
+				displayMessage(msg);
+				$.ajax({
+					url: "",
+					context: document.body,
+					success: function(s,x){
+						$(this).html(s);
+					}
+				});				
+			  
 			}
 
 			function displayMessage(msg){
@@ -124,32 +156,43 @@
 					</div>
 				</form>
 			</div>
-			<div class="row">
-				<div class="col-lg-4  col-md-offset-1">
-				  <label for="r_slider" class="control-label">Number of Grades:</label>
-					<input id="r_slider" class="r_slider" type="text" style="width:100%;"/>			
-				</div>
-				
-				<div class="col-lg-4">
-					<label for="r_categories" class="control-label">Number of Categories/Criteria:</label>
-					<input id="r_categories" type="text" data-slider-orientation="vertical"/
-				</div>
-      </div>
-      <button id="rCategoryBtn">Add Categories</button>
-			<div class="row">
-				<div class="col-xs-12 col-md-6 col-md-offset-3">
-					<a href="#" onclick="saveProjectData($('#projects_list').find(':selected').val());" class="btn btn-success btn-primary">Save Changes</a>
-					<a href="#" onclick="deleteProjectData($('#projects_list').find(':selected').val());" class="btn btn-warning">Delete Project</a>	
-				</div>
-			</div>
 			<hr/>
 			<!--=================================================================-->
-    <div id="main">
-        <input type="button" id="btAdd" value="Add Element" class="bt" />
-        <input type="button" id="btRemove" value="Remove Element" class="bt" />
-        <input type="button" id="btRemoveAll" value="Remove All" class="bt" /><br />
+    <div class="row">
+      <div class="col-lg-4 col-lg-offset-2">
+        <label for="taskCnt">Tasks</label><br/>
+        <input type="number" id="taskCnt" class="form-control" min="1" max="25" value="1"/>
+      </div>
     </div>
+
+    <div class="row margin-top-md">
+      <div class="col-lg-4 col-lg-offset-2">
+        <label for="rubCnt">Rubric Grades (1-5)</label><br/>
+        <input type="number" id="rubCnt" class="form-control" min="1" max="5" value="1"/>
+      </div>
+    </div>
+
+    <div class="row margin-top-md" id="main">
+      <div class="col-lg-8 col-xs-6 col-md-offset-3">
+        <input type="button" id="btAdd" value="Add Elements" class="bt btn-success" />
+        <input type="button" id="btRemove" value="Remove Element" class="bt btn-warning" />
+        <input type="button" id="btRemoveAll" value="Remove All" class="bt btn-danger" />
+      </div>
+      
+      <hr/>
+      
+      <div id="ta_container" class="container"></div>
+    </div>
+    
+		<div class="row margin-top-md">
+			<div class="col-xs-12 col-md-6 col-md-offset-3">
+				<a href="#" onclick="saveRubricData($('#projects_list').find(':selected').val());" class="btn btn-success btn-primary">Save Project Rubric</a>
+				<a href="#" onclick="deleteRubricData($('#projects_list').find(':selected').val());" class="btn btn-warning">Delete Project</a>	
+			</div>
+		</div>
+    
 			<!--=================================================================-->
+			<hr/>
 			<footer>
 				<p>&copy; STEM Cell 2015</p>
 			</footer>			
@@ -160,91 +203,48 @@
 		<script src="./js/bootstrap-dialog.min.js"></script>
 
 		<script>
-
 			$( document ).ready(function() {
-				$("#r_slider").slider({
-					ticks: [1,2,3,4,5,6,7,8,9,10],
-					ticks_labels: labels,
-					ticks_snap_bounds: 30
-				});	
-
-				$("#r_slider").on("slideStop", function(slideEvt) {
-					console.log(slideEvt.value);
-					$("#rubric_val").val(rubricValues[slideEvt.value-1]);
-				});
-
-				// With JQuery
-        $("#r_categories").slider({
-          min:1,
-          max:10,
-          ticks:[1,2,3,4,5,6,7,8,9,10],
-          ticks_labels:labels,
-          ticks_snap_bounds: 30,
-	        reversed : false
-        });
         /* Add dynamic controls */
-
         var iCnt = 0;
-        // CREATE A "DIV" ELEMENT AND DESIGN IT USING JQUERY ".css()" CLASS.
-        var container = $(document.createElement('div')).css({
-            padding: '5px', margin: '20px', width: '170px', border: '1px dashed',
-            borderTopColor: '#999', borderBottomColor: '#999',
-            borderLeftColor: '#999', borderRightColor: '#999'
-        });
+        var row = $("#ta_container").append("div").addClass("row");
+        $(row).attr('id', 'rubrow');
 
         $('#btAdd').click(function() {
-            if (iCnt <= 19) {
-
-                iCnt = iCnt + 1;
-
-                // ADD TEXTBOX.
-                $(container).append('<input type=text class="input" id=tb' + iCnt + ' ' +
-                            'value="Text Element ' + iCnt + '" />');
-
-                // SHOW SUBMIT BUTTON IF ATLEAST "1" ELEMENT HAS BEEN CREATED.
-                if (iCnt == 1) {
-
-                    var divSubmit = $(document.createElement('div'));
-                    $(divSubmit).append('<input type=button class="bt" onclick="GetTextValue()"' + 
-                            'id=btSubmit value=Submit />');
-                }
-
-                // ADD BOTH THE DIV ELEMENTS TO THE "main" CONTAINER.
-                $('#main').after(container, divSubmit);
-            }
-            // AFTER REACHING THE SPECIFIED LIMIT, DISABLE THE "ADD" BUTTON.
-            // (20 IS THE LIMIT WE HAVE SET)
-            else {      
-                
-                $(container).append('<label>Reached the limit</label>'); 
-                $('#btAdd').attr('class', 'bt-disable'); 
-                $('#btAdd').attr('disabled', 'disabled');
-
-            }
+          if(iCnt > 0){
+            removeAll();
+          }
+          iCnt = 0;
+          var rubCnt = $("#rubCnt").val();
+          for(var i = 0; i < rubCnt; i++){
+            iCnt = iCnt + 1;
+            var col = $(document.createElement('div'));
+            $(col).attr('id', 'rub' + iCnt);
+            col.addClass("col-xs-4 col-md-2 col-lg-2 margin-left-md");
+            $(col).append('h3').text("Rubric Level Description " + parseInt(rubCnt - i));
+            $(col).append('<textarea class="form-control rubric" rows="3" id="ta' + parseInt(rubCnt - i) + '" />');
+            $("#rubrow").after(col);
+          }
         });
 
         $('#btRemove').click(function() {   // REMOVE ELEMENTS ONE PER CLICK.
-            if (iCnt != 0) { $('#tb' + iCnt).remove(); iCnt = iCnt - 1; }
-        
-            if (iCnt == 0) { $(container).empty(); 
-        
-                $(container).remove(); 
-                $('#btSubmit').remove(); 
-                $('#btAdd').removeAttr('disabled'); 
-                $('#btAdd').attr('class', 'bt') 
-
+            if (iCnt !== 0) { 
+              $('#rub' + iCnt).remove(); 
+              iCnt = iCnt - 1; 
             }
         });
 
         $('#btRemoveAll').click(function() {    // REMOVE ALL THE ELEMENTS IN THE CONTAINER.
-        
-            $(container).empty(); 
-            $(container).remove(); 
-            $('#btSubmit').remove(); iCnt = 0; 
-            $('#btAdd').removeAttr('disabled'); 
-            $('#btAdd').attr('class', 'bt');
-
+          removeAll();
         });
+        
+        function removeAll(){
+            var numItems = $('.rubric').length;
+            while(numItems > 0){
+              $('#rub' + numItems).remove();
+              numItems = $('.rubric').length;
+            }  
+            iCnt = 0;
+        }
     });
 
 		</script>
