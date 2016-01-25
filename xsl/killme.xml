@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<task_rubrics>
+	<task id="11">design nose cone  
+		<rubric_details r_level="1"><![CDATA[design it]]></rubric_details>
+	</task>
+	<task id="11">design nose cone  
+		<rubric_details r_level="2"><![CDATA[refine it]]></rubric_details>
+	</task>
+	<task id="11">design nose cone  
+		<rubric_details r_level="3"><![CDATA[build it]]></rubric_details>
+	</task>
+	<task id="12">Add Engine  
+		<rubric_details r_level="1"><![CDATA[Find Engine]]></rubric_details>
+	</task>
+	<task id="12">Add Engine  
+		<rubric_details r_level="2"><![CDATA[Build Engine]]></rubric_details>
+	</task>
+	<task id="12">Add Engine  
+		<rubric_details r_level="3"><![CDATA[Run Engine]]></rubric_details>
+	</task>
+</task_rubrics>

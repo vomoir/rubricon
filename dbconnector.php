@@ -6,7 +6,7 @@ Date last modified: 08/11/2015
 
 	define("MYSQLHOST", 'localhost');
 	define("MYSQLUSER",	'root');
-	define("MYSQLPASS",	'bumvebwu');	
+	define("MYSQLPASS",	'');	
 	define("MYSQLDB", 'db_pragmatic');
 	
 	function opendatabase(){

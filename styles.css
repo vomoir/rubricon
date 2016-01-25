@@ -1,6 +1,13 @@
-#greeting {
-  background-color: #F8F8F8;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 24px;
-  margin: 15px;
-}
+.margin-top-xs { margin-top: 0.5em; }
+.margin-top-s { margin-top: 1.0em; }
+.margin-top-md { margin-top: 1.5em; }
+.margin-top-l { margin-top: 2.0em; }
+.margin-top-xl { margin-top: 2.5em; }
+.margin-top-xxl { margin-top: 3.0em; }
+/* Left margin custom */
+.margin-left-xs { margin-left: 0.5em; }
+.margin-left-s { margin-left: 1.0em; }
+.margin-left-md { margin-left: 1.5em; }
+.margin-left-l { margin-left: 2.0em; }
+.margin-left-xl { margin-left: 2.5em; }
+.margin-left-xxl { margin-left: 3.0em; }

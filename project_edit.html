@@ -1,148 +1,27 @@
-<!DOCTYPE html>
-<!-- saved from url=(0043)http://getbootstrap.com/examples/jumbotron/ -->
-<html lang="en">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<meta name="description" content=""/>
-		<meta name="author" content=""/>
-		<link rel="shortcut icon" href="img/favicon.png"/>
+<!DOCTYPE html><!-- saved from url=(0043)http://getbootstrap.com/examples/jumbotron/ --><html lang="en"><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="img/favicon.png">
 
-		<title>St Cath's Sports Choices</title>
-		<link href="css/bootstrap.min.css" rel="stylesheet"/>
-		<link href="css/bootstrap-theme.min.css" rel="stylesheet"/>
-		<link href="css/bootstrap-slider.css" rel="stylesheet"/>
+		<title>Pragmatic &copy; Rubricon</title>
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+		<link href="css/bootstrap-slider.css" rel="stylesheet">
 		
 		<script src="./js/jquery.min.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
 		<script src="./js/bootstrap-dialog.min.js"></script>
 		<style>[touch-action="none"]{ -ms-touch-action: none; touch-action: none; }[touch-action="pan-x"]{ -ms-touch-action: pan-x; touch-action: pan-x; }[touch-action="pan-y"]{ -ms-touch-action: pan-y; touch-action: pan-y; }[touch-action="scroll"],[touch-action="pan-x pan-y"],[touch-action="pan-y pan-x"]{ -ms-touch-action: pan-x pan-y; touch-action: pan-x pan-y; }</style>
-		<script>
-			$(document).ready(function() {
-				//bind the onblur on inputs so the values are restored
-				$( "input" ).blur(function() {
-					//alert( "Handler for .blur() called." + this.name );
-					if(this.value==''){
-						this.value = this.placeholder;
-					}
-				});
-				$.ajax({
-					url: "project_get_list.php",
-					cache: false,
-					success: function(html){
-						$("#projects_list").append(html);
-					}
-				});				
-			});
-
-			function getProjectData(projId){
-				if(projId > 0){
-					//alert(projId);
-					$.ajax({
-						type: "POST",
-						url: "project_get_detail.php",
-						cache: false,
-						data: {'ID': projId},
-						dataType: "xml",
-						success: function(xml) {
-							console.log(xml);
-							$(xml).find('projects').each(function(){
-								//var nName = this.nodeName;
-								//alert("Node Name = " + nName);
-								var proj = $(this).find("project").text();
-								$('#project').val(proj);
-								var proj_details = $(this).find("project_details").text()
-								$('#p_details').val(proj_details);
-							});
-						},
-						error: function(xhr, textStatus, error){
-							console.log(xhr.statusText);
-							console.log(textStatus);
-							console.log(error);
-						}
-					});
-				} 
-			}
-			function deleteProjectData(projId){
-				if(projId == null || projId == 0 ){
-					return false;
-				}
-				var answer = confirm("Are you sure? (OK confirms your choice)")
-				if (answer){//'OK' selected
-					$.ajax({
-						url: "project_delete.php",
-						cache: false,
-						type: 'POST',
-						data: {'projectId': projId},
-						success: function() {
-							displayMessage("Project Deleted");	
-							$.ajax({
-								url: "",
-								context: document.body,
-								success: function(s,x){
-									$(this).html(s);
-								}
-							});												
-						},
-						error: function(xhr, textStatus, error){
-							displayMessage( "Error deleting data: " + error ); 
-						}
-					});
-				}
-			}
-			function saveProjectData(projId){
-				var str = $("form").serialize();
-				console.log(str);
-				$.ajax({
-					url: "project_edit.php",
-					cache: false,
-					type: 'POST',
-					data: str,
-					success: function(resp) {
-						if(resp.indexOf("error") > -1){
-							msg = resp.replace("error","");																						
-						} else {
-							msg = "Project details updated!";
-						}
-						displayMessage(msg);
-						$.ajax({
-							url: "",
-							context: document.body,
-							success: function(s,x){
-								$(this).html(s);
-							}
-						});					
-					},
-					error: function(xhr, textStatus, error){
-						displayMessage("Error saving data: " + error ); 
-					}
-				});							
-			}
-			
-			function displayMessage(msg){
-				BootstrapDialog.show({
-					title:"Rubricon",
-					size: BootstrapDialog.SIZE_NORMAL,
-					cssClass: 'login-dialog',
-					message: msg,
-					draggable: true,
-					buttons: [{
-						label: 'Close',
-						action: function(dialogItself){
-							dialogItself.close();
-						}
-					}]
-				});
-			}
-			
-		</script>
+		<script src="./js/project_edit.js"></script>
 	</head>
 	<body>
 		<div class="navbar navbar-inverse navbar-fixed-top">
 			<div class="container">
 				<div class="navbar-header">
-					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse"/>
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
@@ -152,9 +31,8 @@
 				<div class="navbar-collapse collapse" style="height: 1px;">
 					<ul class="nav navbar-nav">
 						<li><a href="index.html">Home</a></li>
-						<li class="active"><a href="register.html">Register</a></li>
-						<li><a href="login.html">Log In</a></li>
-						<li><a href="sports_select.html">Choose Sport</a></li>
+						<li class="active"><a href="project_edit.html">Edit Projects</a></li>
+						<li><a href="rubric_edit.html">Edit Rubrics</a></li>
 					</ul>
 				</div><!--/.navbar-collapse -->
 			</div>
@@ -164,20 +42,21 @@
 			<h2>Edit Project Details</h2>
 
 				<form id="projectedit" name="projectedit" role="form" class="form-horizontal">
+
 					<div class="col-md-6 col-md-offset-1">
 						<div class="form-group">
 							<label for="projects_list" class="col-lg-4 control-label">Select Project</label>
-							<select id="projects_list" name="projects_list" class="col-lg-8" class="form-control" onchange="getProjectData($('#projects_list').find(':selected').val())">
+							<select id="projects_list" name="projects_list" class="col-lg-8 form-control" onchange="getProjectData($('#projects_list').find(':selected').val())">
 								<option value="0">Select project...</option>
 							</select>
 						</div>
 						<div class="form-group">
-							<label for="project" class="col-lg-4 control-label">Project:</label>
-							<input type="text" name="project" id="project" placeholder="Project Name" class="form-control" size="20" class="col-lg-8">
+							<label for="project" class="col-lg-4 control-label">Project</label>
+							<input type="text" name="project" id="project" placeholder="Project Name" class="form-control" size="20">
 						</div>
 						<div class="form-group">
-							<label for="p_details" class="col-lg-4 control-label">Project Details:</label>
-							<textarea id="p_details" name="p_details" class="form-control" rows="3" class="col-lg-8"></textarea>
+							<label for="p_details" class="col-lg-4 control-label">Project Details</label>
+							<textarea id="p_details" name="p_details" class="form-control" rows="3"></textarea>
 						</div>						
 					</div>
 				</form>
@@ -187,10 +66,10 @@
 						<a href="#" onclick="deleteProjectData($('#projects_list').find(':selected').val());" class="btn btn-warning">Delete Project</a>	
 					</div>
 				</div>
-			<hr/>
+			<hr>
 			<footer>
-				<p>&copy; STEM Cell 2015</p>
+				<p>© STEM Cell 2015</p>
 			</footer>			
 		</div>
-	</body>
-</html>
+	
+</body></html>
